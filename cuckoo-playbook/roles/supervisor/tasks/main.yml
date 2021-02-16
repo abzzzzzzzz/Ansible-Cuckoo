@@ -1,0 +1,125 @@
+
+- name: Install supervisor
+  become: true
+  apt:
+    pkg: supervisor
+    update_cache: false
+
+- name: Create cuckoo logging directory
+  become: true
+  ansible.builtin.file:
+    path: /var/log/cuckoo
+    state: directory
+    owner: '{{ cuckoo_user }}'
+    group: '{{ cuckoo_user }}'
+    mode: '0755'
+
+- name: Create cuckoo rooter supervisor config
+  blockinfile:
+   path: /etc/supervisor/conf.d/cuckoo_rooter.conf
+   create: yes
+   block: |
+    [program:cuckoo_rooter]
+    command=/home/{{ cuckoo_user }}/.local/bin/cuckoo rooter -g {{ cuckoo_user }}
+    user = root
+    directory=/home/{{ cuckoo_user }}/.cuckoo
+    autorestart=true
+    autostart=true
+    stopasgroup=true
+    environment=PYTHONPATH="/home/{{ cuckoo_user }}/.local/lib/python2.7/site-packages/"
+    stdout_logfile=/var/log/cuckoo/cuckoo_rooter.log
+    stderr_logfile=/var/log/cuckoo/cuckoo_rooter.err
+  become: yes
+  become_user: root
+
+- name: Create cuckoo web supervisor config
+  blockinfile:
+   path: /etc/supervisor/conf.d/cuckoo_web.conf
+   create: yes
+   block: |
+    [program:cuckoo_web]
+    command=/home/{{ cuckoo_user }}/.local/bin/cuckoo web runserver 0.0.0.0:8000
+    user = {{ cuckoo_user }}
+    directory=/home/{{ cuckoo_user }}/.cuckoo
+    autorestart=true
+    autostart=true
+    stopasgroup=true
+    stdout_logfile=/var/log/cuckoo/cuckoo_web.log
+    stderr_logfile=/var/log/cuckoo/cuckoo_web.err
+  become: yes
+  become_user: root
+
+- name: Create cuckoo api supervisor config
+  blockinfile:
+   path: /etc/supervisor/conf.d/cuckoo_api.conf
+   create: yes
+   block: |
+    [program:cuckoo_api]
+    command=/home/{{ cuckoo_user }}/.local/bin/cuckoo api --host 0.0.0.0 --port 8001
+    user = {{ cuckoo_user }}
+    directory=/home/{{ cuckoo_user }}/.cuckoo
+    autorestart=true
+    autostart=true
+    stopasgroup=true
+    stdout_logfile=/var/log/cuckoo/cuckoo_api.log
+    stderr_logfile=/var/log/cuckoo/cuckoo_api.err
+  become: yes
+  become_user: root
+
+- name: Create cuckoo supervisor config
+  blockinfile:
+   path: /etc/supervisor/conf.d/cuckoo.conf
+   create: yes
+   block: |
+    [program:cuckoo]
+    command=/home/{{ cuckoo_user }}/.local/bin/cuckoo
+    user = {{ cuckoo_user }}
+    directory=/home/{{ cuckoo_user }}/.cuckoo
+    autorestart=true
+    autostart=true
+    stopasgroup=true
+    stdout_logfile=/var/log/cuckoo/cuckoo.log
+    stderr_logfile=/var/log/cuckoo/cuckoo.err
+  become: yes
+  become_user: root
+
+- name: Create suricata supervisor config
+  blockinfile:
+   path: /etc/supervisor/conf.d/suricata_cuckoo.conf
+   create: yes
+   block: |
+    [program:suricata_cuckoo]
+    command=/usr/bin/suricata -D --user={{ cuckoo_user }} --group={{ cuckoo_user }} --unix-socket=cuckoo.socket
+    user = {{ cuckoo_user }}
+    directory=/home/{{ cuckoo_user }}/.cuckoo
+    autorestart=true
+    autostart=true
+    stopasgroup=true
+    stdout_logfile=/var/log/cuckoo/suricata_cuckoo.log
+    stderr_logfile=/var/log/cuckoo/suricata_cuckoo.err
+  become: yes
+  become_user: root
+
+- name: Start supervisor
+  become: true
+  become_user: root
+  ansible.builtin.command:
+    cmd: systemctl start supervisor
+
+- name: Reread supervisor configs
+  become: true
+  become_user: root
+  ansible.builtin.command:
+    cmd: supervisorctl reread
+
+- name: Update supervisor configs
+  become: true
+  become_user: root
+  ansible.builtin.command:
+    cmd: supervisorctl update
+
+- name: Start supervisor configs
+  become: true
+  become_user: root
+  ansible.builtin.command:
+    cmd: supervisorctl restart all

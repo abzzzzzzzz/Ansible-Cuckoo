@@ -7,7 +7,7 @@
 - name: Download Moloch deb package
   become: true
   become_method: sudo
-  get_url: url=https://files.molo.ch/builds/ubuntu-16.04/moloch_{{ moloch_ver }}_amd64.deb dest=/tmp mode=0644
+  get_url: url=https://files.molo.ch/builds/ubuntu-{{ ubuntu_ver }}/moloch_{{ moloch_ver }}_amd64.deb dest=/tmp mode=0644
   when: moloch_deb_package_file.stat.exists == false 
 
 - name: Install Moloch

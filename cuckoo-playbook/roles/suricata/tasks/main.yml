@@ -49,7 +49,7 @@
   become: true
   become_method: sudo
   become_user: "{{ cuckoo_user }}"
-  shell: "{{ cuckoo_dir }}/bin/python setup.py install"
+  shell: "python2 setup.py install --user"
   args:
     chdir: "{{ build_dir }}/suricata-{{ suricata_ver }}/scripts/suricatasc"
 
@@ -189,4 +189,4 @@
 - name: Start Suricata IDS
   become: true
   become_method: sudo
-  shell: suricata -D --user=cuckoo --group=cuckoo --unix-socket=cuckoo.socket
+  shell: suricata -D --user={{ cuckoo_user }} --group={{ cuckoo_user }} --unix-socket=cuckoo.socket

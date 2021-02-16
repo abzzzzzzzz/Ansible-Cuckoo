@@ -1,8 +1,15 @@
 ---
-- name: Verify if Python is installed
-  shell: python --version
-  register: python_version
 
-- name: Install python 2
-  raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
-  when: python_version.stdout[:-5] == "Python 2"
+- name: Install python2
+  become: yes
+  become_method: sudo
+  apt:
+    name: python-minimal
+    state: latest
+
+- name: Install python-pip
+  become: yes
+  become_method: sudo
+  apt:
+    name: python-pip
+    state: latest

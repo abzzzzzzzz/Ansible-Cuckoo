@@ -3,7 +3,7 @@
   become: true
   become_method: sudo
   apt_repository:
-    repo: ppa:webupd8team/java
+    repo: ppa:ts.sch.gr/ppa
     state: present
     update_cache: false
 

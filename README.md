@@ -1,3 +1,5 @@
+Based on https://github.com/julianoborba/Ansible-Cuckoo
+
 ## Synopsis
 
 This is a fully functional updated standalone Ansible script for building a Cuckoo Sandbox server out of box. The following capabilities are included:

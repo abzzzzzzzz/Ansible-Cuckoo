@@ -1,29 +1,42 @@
 ---
-- name: Install Cuckoo into virtualenv - {{ cuckoo_dir }}
-  become: true
-  become_method: sudo
-  pip: name={{ item }} state=latest virtualenv="{{ cuckoo_dir }}"
+- name: Install Cuckoo 
+  pip: name={{ item }} state=latest extra_args=--user
   with_items:
-    - pip
-    - setuptools
-    - psycopg2
     - cuckoo
 
-- name: Change owner of {{ cuckoo_dir }} directory
+- name: Change owner of /home/{{ cuckoo_user }}/.local directory
   become: true
   become_method: sudo
   file:
-    path: "{{ cuckoo_dir }}"
+    path: "/home/{{ cuckoo_user }}/.local"
     state: directory
     owner: "{{ cuckoo_user }}"
     group: "{{ cuckoo_user }}"
     recurse: true
 
+# - name: Add {{ cuckoo_user }} binaries to root's path
+#   become: true
+#   become_method: sudo
+#   become_user: root
+#   ansible.builtin.lineinfile:
+#     path: /root/.bashrc
+#     state: present
+#     line: 'export PATH=/home/{{ cuckoo_user }}/.local/bin/:$PATH'
+
+# - name: Add {{ cuckoo_user }} python packages to root's path
+#   become: true
+#   become_method: sudo
+#   become_user: root
+#   ansible.builtin.lineinfile:
+#     path: /root/.bashrc
+#     state: present
+#     line: 'export PYTHONPATH=$PYTHONPATH:/home/{{ cuckoo_user }}/.local/lib/python2.7/site-packages/'
+
 - name: Setup Cuckoo Working Directory - {{ cwd }}
   become: true
   become_method: sudo   
   become_user: "{{ cuckoo_user }}"
-  command: "{{ cuckoo_dir }}/bin/cuckoo --cwd {{ cwd }}"
+  command: "/home/{{ cuckoo_user }}/.local/bin/cuckoo --cwd {{ cwd }}"
   failed_when: result.rc != 1 and result.rc != 0
   register: result
 
@@ -128,7 +141,18 @@
     group: "{{ cuckoo_user }}"
     mode: 0644
   with_fileglob:
-    - ../files/*
+    - ../files/conf/*
+
+- name: Copy remotecontrol patch for urls.py
+  become: true
+  become_method: sudo
+  become_user: "{{ cuckoo_user }}"
+  copy:
+    src: "../files/patch/urls.py"
+    dest: "/home/{{ cuckoo_user }}/.local/lib/python2.7/site-packages/cuckoo/web/analysis/urls.py"
+    owner: "{{ cuckoo_user }}"
+    group: "{{ cuckoo_user }}"
+    mode: 0644
 
 - name: Copy local Cuckoo routing.conf file to {{ cwd }}/conf
   become: true
@@ -145,7 +169,7 @@
   become: true
   become_method: sudo
   become_user: "{{ cuckoo_user }}"
-  command: "{{ cuckoo_dir }}/bin/cuckoo community"
+  command: "/home/{{ cuckoo_user }}/.local/bin/cuckoo community"
   failed_when: result.rc != 1 and result.rc != 0
   register: result
 

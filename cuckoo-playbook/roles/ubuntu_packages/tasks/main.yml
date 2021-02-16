@@ -1,4 +1,15 @@
 ---
+- name: Upgrade the OS (apt-get dist-upgrade)
+  become: true
+  apt:
+    upgrade: dist
+
+- name: Install net-tools
+  become: true
+  apt:
+    pkg: net-tools
+    update_cache: false
+
 - name: Install build-essential package
   become: true
   become_method: sudo
@@ -20,6 +31,14 @@
   become_method: sudo
   apt:
     pkg: python-pip
+    state: present
+    update_cache: false
+
+- name: Install python3-pip package
+  become: true
+  become_method: sudo
+  apt:
+    pkg: python3-pip
     state: present
     update_cache: false
 
@@ -482,5 +501,37 @@
   become_method: sudo
   apt:
     pkg: libyaml-doc
+    state: present
+    update_cache: false
+
+- name: Install libguac-client-rdp0 package
+  become: true
+  become_method: sudo
+  apt:
+    pkg: libguac-client-rdp0
+    state: present
+    update_cache: false
+
+- name: Install libguac-client-vnc0 package
+  become: true
+  become_method: sudo
+  apt:
+    pkg: libguac-client-vnc0
+    state: present
+    update_cache: false
+
+- name: Install libguac-client-ssh0 package
+  become: true
+  become_method: sudo
+  apt:
+    pkg: libguac-client-ssh0
+    state: present
+    update_cache: false
+
+- name: Install guacd package
+  become: true
+  become_method: sudo
+  apt:
+    pkg: guacd
     state: present
     update_cache: false

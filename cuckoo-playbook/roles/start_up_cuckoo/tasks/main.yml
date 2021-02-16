@@ -2,7 +2,7 @@
 - name: Start Cuckoo Rooter
   become: true
   become_method: sudo
-  shell: "{{ cuckoo_dir }}/bin/cuckoo rooter &"
+  shell: "{{ cuckoo_dir }}/bin/cuckoo rooter -g {{ cuckoo_user }} &"
 
 - name: Wait for Rooter
   pause:
@@ -12,7 +12,7 @@
   become: true
   become_method: sudo
   become_user: "{{ cuckoo_user }}"
-  shell: "nohup {{ cuckoo_dir }}/bin/cuckoo web runserver 0.0.0.0:8880 >/dev/null 2>&1 &"
+  shell: "nohup {{ cuckoo_dir }}/bin/cuckoo web runserver 0.0.0.0:8000 >/dev/null 2>&1 &"
 
 - name: Wait for Cuckoo Web
   pause:
@@ -22,7 +22,7 @@
   become: true
   become_method: sudo
   become_user: "{{ cuckoo_user }}"
-  shell: "nohup {{ cuckoo_dir }}/bin/cuckoo api --host 0.0.0.0 --port 8881 >/dev/null 2>&1 &"
+  shell: "nohup {{ cuckoo_dir }}/bin/cuckoo api --host 0.0.0.0 --port 8001 >/dev/null 2>&1 &"
 
 - name: Wait for Cuckoo API
   pause:

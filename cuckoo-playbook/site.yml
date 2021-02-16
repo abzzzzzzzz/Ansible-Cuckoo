@@ -4,23 +4,24 @@
 - hosts: all
   gather_facts: false
   roles:
-    - python
-    - cuckoo_user
-    - build_directory
-    - ubuntu_packages
-    - python_packages
-    - postgresql
-    - java
-    - elasticsearch
-    - android_virtual_device
-    - virtualbox
-    - cuckoo
-    - yara
-    - volatility
-    - suricata
-    - moloch
-    - tor
-    - network
-    - date_time
-    - start_up_cuckoo
+     - python
+     - cuckoo_user
+     - build_directory
+     - ubuntu_packages
+     - python_packages
+     - postgresql
+     - java
+     - elasticsearch
+    # - android_virtual_device
+     - virtualbox
+     - cuckoo
+     - yara
+     - volatility
+     - suricata
+    # - moloch
+    # - tor
+     - network
+     - date_time
+     - supervisor
+    # - start_up_cuckoo
     # - reboot_system

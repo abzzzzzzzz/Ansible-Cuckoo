@@ -3,13 +3,13 @@
   become: true
   become_method: sudo
   become_user: "postgres"
-  postgresql_db: name={{ cuckoo_user }}
+  postgresql_db: name=cuckoo
 
 - name: Ensure user has access to database
   become: true
   become_method: sudo
   become_user: "postgres"
-  postgresql_user: db={{ cuckoo_user }} name={{ cuckoo_user }} password={{ cuckoo_user }} priv=ALL
+  postgresql_user: db=cuckoo name={{ cuckoo_user }} password={{ cuckoo_user }} priv=ALL
 
 - name: Ensure user does not have unnecessary privilege
   become: true
@@ -21,4 +21,4 @@
   become: true
   become_method: sudo
   become_user: "postgres"
-  postgresql_privs: db={{ cuckoo_user }} role=PUBLIC type=database priv=ALL state=absent
+  postgresql_privs: db=cuckoo role=PUBLIC type=database priv=ALL state=absent

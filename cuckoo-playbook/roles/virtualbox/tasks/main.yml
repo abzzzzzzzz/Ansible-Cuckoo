@@ -68,8 +68,20 @@
   become: true
   become_method: sudo
   become_user: "{{ cuckoo_user }}"
-  command: "vboxmanage import {{ cuckoo_appliance }}"
+  command: "vboxmanage import {{ cuckoo_appliance }} --vsys 0 --vmname {{ cuckoo_vm_label }}"
   when: 'cuckoo_vm_label not in vm_name.stdout'
+
+- name: Disable 3d acceleration for {{ cuckoo_vm_label }}
+  become: true
+  become_method: sudo
+  become_user: "{{ cuckoo_user }}"
+  command: vboxmanage modifyvm {{ cuckoo_vm_label }} --accelerate3d off
+
+- name: Enable vrde/remote control for {{ cuckoo_vm_label }}
+  become: true
+  become_method: sudo
+  become_user: "{{ cuckoo_user }}"
+  command: vboxmanage modifyvm {{ cuckoo_vm_label }} --vrde on
 
 - name: Remove vboxnet0
   become: true
@@ -160,7 +172,7 @@
   with_fileglob:
     - ../files/usr.lib.virtualbox.VirtualBox
 
-- name: Apply AppArmor profile for VirtualBox
-  become: true
-  become_method: sudo
-  shell: aa-enforce /etc/apparmor.d/usr.lib.virtualbox.VirtualBox
+# - name: Apply AppArmor profile for VirtualBox
+#   become: true
+#   become_method: sudo
+#   shell: aa-enforce /etc/apparmor.d/usr.lib.virtualbox.VirtualBox

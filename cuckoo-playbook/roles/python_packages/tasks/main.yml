@@ -1,10 +1,30 @@
 ---
-- name: Install pyvmomi package
+- name: Upgrade pip2
+  become: true
+  ansible.builtin.command:
+    cmd: pip install --upgrade pip
+
+- name: Upgrade pip3
+  become: true
+  ansible.builtin.command:
+    cmd: pip3 install --upgrade pip
+
+- name: Make pip2 default pip executable
   become: true
   become_method: sudo
+  ansible.builtin.file:
+    src: /usr/local/bin/pip2
+    dest: /usr/local/bin/pip
+    owner: root
+    group: root
+    state: link
+    force: yes
+
+- name: Install pyvmomi package
   pip:
     name: pyvmomi
     state: latest
+    executable: pip2
 
 - name: Install pydeep package
   become: true
@@ -12,6 +32,7 @@
   pip:
     name: pydeep
     state: latest
+    executable: pip2
 
 - name: Install m2crypto package
   become: true
@@ -19,13 +40,13 @@
   pip:
     name: m2crypto
     state: latest
+    executable: pip2
 
 - name: Install mitmproxy package
   become: true
   become_method: sudo
-  pip:
-    name: mitmproxy
-    state: latest
+  ansible.builtin.command:
+    cmd: pip3 install -U mitmproxy
 
 - name: Install pillow package
   become: true
@@ -33,6 +54,7 @@
   pip:
     name: pillow
     state: latest
+    executable: pip2
 
 - name: Install pytesseract package
   become: true
@@ -40,6 +62,7 @@
   pip:
     name: pytesseract
     state: latest
+    executable: pip2
 
 - name: Install protobuf package
   become: true
@@ -47,6 +70,7 @@
   pip:
     name: protobuf
     state: latest
+    executable: pip2
 
 - name: Install sflock package
   become: true
@@ -54,6 +78,7 @@
   pip:
     name: sflock
     state: latest
+    executable: pip2
 
 - name: Install distorm3 package
   become: true
@@ -61,6 +86,7 @@
   pip:
     name: distorm3
     state: latest
+    executable: pip2
 
 - name: Install pycrypto package
   become: true
@@ -68,6 +94,7 @@
   pip:
     name: pycrypto
     state: latest
+    executable: pip2
 
 - name: Install openpyxl package
   become: true
@@ -75,6 +102,7 @@
   pip:
     name: openpyxl
     state: latest
+    executable: pip2
 
 - name: Install ujson package
   become: true
@@ -82,6 +110,7 @@
   pip:
     name: ujson
     state: latest
+    executable: pip2
 
 - name: Install yara-python package
   become: true
@@ -89,3 +118,32 @@
   pip:
     name: yara-python
     state: latest
+    executable: pip2
+
+- name: Install pyOpenSSL
+  become: true
+  become_method: sudo
+  pip:
+    name: pyOpenSSL
+    state: latest
+    executable: pip2
+
+- name: Install setuptools
+  become: true
+  become_method: sudo
+  pip:
+    name: setuptools
+    state: latest
+    executable: pip2
+
+- name: Install psycopg2
+  pip:
+    name: psycopg2
+    state: latest
+    executable: pip2
+
+- name: Install psycopg2 in python3
+  pip:
+    name: psycopg2
+    state: latest
+    executable: pip3
